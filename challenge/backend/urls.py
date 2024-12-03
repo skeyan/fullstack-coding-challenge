@@ -15,10 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
+
+class BrowsableObtainAuthToken(ObtainAuthToken):
+    renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/',obtain_auth_token, name='login'),
+    path('login/', BrowsableObtainAuthToken.as_view(), name='login'),
     path('api/complaints/', include('complaint_app.urls')),
 ]
