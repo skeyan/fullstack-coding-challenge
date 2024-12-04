@@ -1,0 +1,120 @@
+.login-container {
+  align-items: center;
+  background-color: var(--color-background);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--spacing-2);
+  width: 100%;
+}
+
+.login-card {
+  background-color: var(--color-white);
+  border-radius: var(--spacing-1);
+  box-shadow: var(--color-box-shadow-card);
+  max-width: 28rem;
+  padding: var(--spacing-4);
+  width: 100%;
+}
+
+.login-header {
+  margin-bottom: var(--spacing-4);
+  text-align: center;
+}
+
+.login-title {
+  color: var(--color-text-primary);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  margin: 0;
+}
+
+.login-subtitle {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  margin-top: var(--spacing-1);
+}
+
+.login-form {
+  margin-top: var(--spacing-4);
+}
+
+.login-note {
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-style: italic;
+}
+
+.form-group {
+  margin-bottom: var(--spacing-2);
+}
+
+.form-input {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--spacing-1);
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  padding: var(--spacing-1);
+  width: 100%;
+}
+
+.form-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: var(--color-box-shadow-focus);
+  outline: none;
+}
+
+.error-message {
+  background-color: var(--color-error-light);
+  border-radius: var(--spacing-1);
+  color: var(--color-error);
+  font-size: var(--text-sm);
+  margin-top: var(--spacing-2);
+  padding: var(--spacing-2);
+}
+
+.submit-button {
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: var(--spacing-1);
+  color: var(--color-white);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  padding: var(--spacing-2);
+  transition: background-color 0.2s ease;
+  width: 100%;
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+}
+
+.submit-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .login-card {
+    border-radius: 0;
+    margin: 0;
+    max-width: 100%;
+    min-height: 100vh;
+    padding: var(--spacing-2);
+  }
+
+  .login-container {
+    padding: 0;
+  }
+
+  .login-title {
+    font-size: var(--text-xl);
+  }
+
+  .form-label {
+    font-size: var(--text-lg);
+  }
+}
