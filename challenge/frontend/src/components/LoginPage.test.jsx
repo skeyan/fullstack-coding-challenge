@@ -4,6 +4,7 @@ import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import LoginPage from './LoginPage';
 
+/* Mocks */
 global.fetch = jest.fn();
 
 const mockSessionStorage = {
@@ -117,8 +118,9 @@ describe('LoginPage', () => {
     const submitButton = screen.getByRole('button', { name: /sign in/i });
     fireEvent.click(submitButton);
 
+    expect(submitButton).toBeDisabled();
     expect(screen.getByText(/signing in/i)).toBeInTheDocument();
-});
+  });
 
   it('handles network errors', async () => {
     fetch.mockImplementationOnce(() => Promise.reject('Network error'));
