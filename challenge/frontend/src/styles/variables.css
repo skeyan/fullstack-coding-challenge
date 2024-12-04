@@ -1,0 +1,42 @@
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+:root {
+    /* Colors */
+    --color-primary: #2563eb;
+    --color-primary-dark: #1d4ed8;
+    --color-error: #dc2626;
+    --color-error-light: #fef2f2;
+    --color-text-primary: #111827;
+    --color-text-secondary: #6b7280;
+    --color-white: #ffffff;
+    --color-background: #f9fafb;
+    --color-border: #d1d5db;
+    --color-input-shadow: rgba(37, 99, 235, 0.1);
+    --color-card-shadow: rgba(0, 0, 0, 0.1);
+  
+    /* Spacing */
+    --spacing-1: 0.5rem;
+    --spacing-2: 1rem;
+    --spacing-4: 2rem;
+    --spacing-8: 4rem;
+  
+    /* Typography */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.25rem;
+    --text-xl: 1.5rem;
+    --text-2xl: 2rem;
+  }
