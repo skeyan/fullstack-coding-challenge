@@ -23,6 +23,14 @@ const DashboardPage = () => {
   const history = useHistory();
 
   useEffect(() => {
+    /**
+     * Fetches complaints data for the authenticated user's district
+     * Redirects to login if no authentication token is found
+     * 
+     * @async
+     * @function fetchComplaints
+     * @throws {Error} When API call fails or returns non-OK response
+     */
     const fetchComplaints = async () => {
       const token = sessionStorage.getItem('token');
       if (!token) {
