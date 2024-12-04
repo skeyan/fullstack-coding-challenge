@@ -11,7 +11,7 @@
 .login-card {
   background-color: var(--color-white);
   border-radius: var(--spacing-1);
-  box-shadow: 0 1px 3px var(--color-card-shadow);
+  box-shadow: var(--color-box-shadow-card);
   max-width: 28rem;
   padding: var(--spacing-4);
   width: 100%;
@@ -61,7 +61,7 @@
 
 .form-input:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-input-shadow);
+  box-shadow: var(--color-box-shadow-focus);
   outline: none;
 }
 
