@@ -91,6 +91,41 @@
   margin: 0.5rem 0 0;
 }
 
+.stat-card.top-complaints {
+  text-align: left;
+  grid-column: 1 / -1; /* Span full width */
+}
+
+.top-complaints-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.top-complaint-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #2c3e50;
+}
+
+.complaint-rank {
+  font-weight: bold;
+  min-width: 1.5rem;
+  color: var(--color-text-primary);
+}
+
+.complaint-type {
+  flex: 1;
+  font-weight: 500;
+}
+
+.complaint-count {
+  color: grey;
+  font-weight: 500;
+}
+
 /* Mobile */
 @media (max-width: 640px) {
   .dashboard-container {

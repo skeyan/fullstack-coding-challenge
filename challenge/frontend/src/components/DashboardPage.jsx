@@ -12,8 +12,6 @@ import './../styles/DashboardPage.css';
  * Fetches and displays tabular data of all complaints with their details.
  * Requires authentication token in sessionStorage to access data.
  *
- * @todo Add top cases
- *
  * @example
  * <Route path="/dashboard" component={Dashboard} />
  */
@@ -21,6 +19,7 @@ const DashboardPage = () => {
   const [complaints, setComplaints] = useState([]);
   const [openCases, setOpenCases] = useState(0);
   const [closedCases, setClosedCases] = useState(0);
+  const [topThreeTypes, setTopThreeTypes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const history = useHistory();
@@ -48,27 +47,30 @@ const DashboardPage = () => {
 
       try {
         // Fetch all data in parallel
-        const [complaintsResponse, openResponse, closedResponse] = await Promise.all([
+        const [complaintsResponse, openResponse, closedResponse, topResponse] = await Promise.all([
           fetch('http://localhost:8000/api/complaints/allComplaints/', { headers }),
           fetch('http://localhost:8000/api/complaints/openCases/', { headers }),
           fetch('http://localhost:8000/api/complaints/closedCases/', { headers }),
+          fetch('http://localhost:8000/api/complaints/topComplaints/', { headers }),
         ]);
 
         // Check if any request failed
-        if (!complaintsResponse.ok || !openResponse.ok || !closedResponse.ok) {
-          throw new Error('Failed to fetch dashboard data');
+        if (!complaintsResponse.ok || !openResponse.ok || !closedResponse.ok || !topResponse.ok) {
+          throw new Error('Failed to fetch some dashboard data');
         }
 
         // Parse all responses
-        const [complaintsData, openData, closedData] = await Promise.all([
+        const [complaintsData, openData, closedData, topData] = await Promise.all([
           complaintsResponse.json(),
           openResponse.json(),
           closedResponse.json(),
+          topResponse.json(),
         ]);
 
         setComplaints(complaintsData);
         setOpenCases(openData.length);
         setClosedCases(closedData.length);
+        setTopThreeTypes(topData);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -111,6 +113,20 @@ const DashboardPage = () => {
             <div className="stat-card">
               <h4>Closed Cases</h4>
               <p className="stat-number">{closedCases}</p>
+            </div>
+            <div className="stat-card">
+              <div className="stat-card top-complaints">
+                <h4>Top Complaint Types</h4>
+                <div className="top-complaints-list">
+                  {topThreeTypes.map((type, index) => (
+                    <div key={type.complaint_type} className="top-complaint-item">
+                      <span className="complaint-rank">{index + 1}.</span>
+                      <span className="complaint-type">{type.complaint_type}</span>
+                      <span className="complaint-count">({type.count})</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>
