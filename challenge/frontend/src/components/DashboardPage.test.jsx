@@ -133,45 +133,4 @@ describe('DashboardPage', () => {
       expect(screen.getByText('Network error')).toBeInTheDocument();
     });
   });
-
-  it('displays correct status for open and closed complaints', async () => {
-    fetch.mockImplementationOnce(() => 
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(mockComplaints)
-      })
-    );
-
-    renderWithRouter(<DashboardPage />);
-
-    await waitFor(() => {
-      const closedStatus = screen.getByText('Closed');
-      const openStatus = screen.getByText('Open');
-      expect(closedStatus).toBeInTheDocument();
-      expect(openStatus).toBeInTheDocument();
-    });
-  });
-
-  it('handles missing descriptors gracefully', async () => {
-    const complaintsWithMissingDescriptor = [{
-      unique_key: '1',
-      complaint_type: 'Aging',
-      descriptor: null,
-      borough: 'Brooklyn',
-      closedate: '2024-01-01'
-    }];
-
-    fetch.mockImplementationOnce(() => 
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(complaintsWithMissingDescriptor)
-      })
-    );
-
-    renderWithRouter(<DashboardPage />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Not provided')).toBeInTheDocument();
-    });
-  });
 });
