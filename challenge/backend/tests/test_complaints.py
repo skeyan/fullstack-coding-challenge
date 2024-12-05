@@ -240,3 +240,109 @@ class ComplaintEndpointTests(TestCase):
                             if item['complaint_type'] == 'Noise')
             self.assertEqual(noise_count, 3,
                 "Count should not include complaints from other districts")
+
+    def test_get_constituent_complaints(self):
+        constituent_complaints = [
+            Complaint.objects.create(
+                unique_key="constituent_complaint_1",
+                account="NYCC02",
+                council_dist="NYCC01",
+                opendate=date(2024, 1, 1),
+                complaint_type="Noise",
+                descriptor="Loud Music",
+                borough="Manhattan"
+            ),
+            Complaint.objects.create(
+                unique_key="constituent_complaint_2",
+                account="NYCC03",
+                council_dist="NYCC01",
+                opendate=date(2024, 1, 2),
+                complaint_type="Traffic",
+                descriptor="Signal",
+                borough="Manhattan"
+            )
+        ]
+
+        other_constituent_complaints = [
+            Complaint.objects.create(
+                unique_key="other_constituent_complaint",
+                account="NYCC01",
+                council_dist="NYCC02",
+                opendate=date(2024, 1, 3),
+                complaint_type="Noise",
+                descriptor="Construction",
+                borough="Manhattan"
+            )
+        ]
+
+        with self.subTest("Fetching constituent complaints"):
+            response = self.client.get('/api/complaints/constituentComplaints/')
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK,
+                "Request should succeed")
+
+            complaint_keys = [c['unique_key'] for c in response.data]
+
+            # Should include complaints from district 1 constituents
+            self.assertIn('constituent_complaint_1', complaint_keys,
+                "Should include complaints from constituents in user's district")
+            self.assertIn('constituent_complaint_2', complaint_keys,
+                "Should include all complaints from constituents in user's district")
+
+            # Should not include complaints from constituents of other districts
+            self.assertNotIn('other_constituent_complaint', complaint_keys,
+                "Should not include complaints from constituents of other districts")
+
+        with self.subTest("Verifying constituent district filtering"):
+            for complaint in response.data:
+                self.assertEqual(complaint['council_dist'], 'NYCC01',
+                    "Each complaint should be from constituents in user's district")
+
+        with self.subTest("Unauthorized access"):
+            client = APIClient()
+            response = client.get('/api/complaints/constituentComplaints/')
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_401_UNAUTHORIZED,
+                "Endpoint should require authentication"
+            )
+
+    def test_constituent_complaints_district_formatting(self):
+        user2 = User.objects.create_user(
+            username="jsmith",
+            password="smith-5",
+            first_name="Jane",
+            last_name="Smith"
+        )
+
+        profile2 = UserProfile.objects.create(
+            user=user2,
+            full_name="Jane Smith",
+            district="5",
+            borough="Manhattan"
+        )
+
+        client = APIClient()
+        response = client.post('/login/', {
+            'username': "jsmith",
+            'password': "smith-5"
+        }, format='json')
+        client.credentials(HTTP_AUTHORIZATION=f'Token {response.data["token"]}')
+
+        Complaint.objects.create(
+            unique_key="single_digit_complaint",
+            account="NYCC02",
+            council_dist="NYCC05",
+            opendate=date(2024, 1, 1),
+            complaint_type="Noise",
+            borough="Manhattan"
+        )
+
+        with self.subTest("Testing single-digit district formatting"):
+            response = client.get('/api/complaints/constituentComplaints/')
+            self.assertEqual(response.status_code, status.HTTP_200_OK,
+                "Request should succeed")
+
+            complaint_keys = [c['unique_key'] for c in response.data]
+            self.assertIn('single_digit_complaint', complaint_keys,
+                "Should handle single-digit district padding correctly")

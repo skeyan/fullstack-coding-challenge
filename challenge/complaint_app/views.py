@@ -132,3 +132,35 @@ class TopComplaintTypeViewSet(viewsets.ModelViewSet):
         return Response(
             {"error": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ConstituentComplaintsViewSet(viewsets.ModelViewSet):
+  http_method_names = ['get']
+  serializer_class = ComplaintSerializer
+  def list(self, request):
+      # Get all complaints from the user's district for only their constituents who live in their district
+      try:
+        user_district = self.request.user.userprofile.district
+
+        # Add leading zero if needed)
+        district_num = user_district if len(user_district) > 1 else f"0{user_district}"
+        formatted_district = f"NYCC{district_num}"
+
+        # Filter complaints by constituent's district (council_dist)
+        complaintsByConstituents = Complaint.objects.filter(
+            council_dist=formatted_district
+        ).order_by('-opendate')
+
+        serializer = self.serializer_class(complaintsByConstituents, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+      # Handle bad paths
+      except UserProfile.DoesNotExist:
+          return Response(
+              {"error": "User profile not found"},
+              status=status.HTTP_404_NOT_FOUND
+          )
+      except Exception as e:
+          return Response(
+              {"error": str(e)},
+              status=status.HTTP_500_INTERNAL_SERVER_ERROR
+          )
