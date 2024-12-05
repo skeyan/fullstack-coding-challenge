@@ -283,13 +283,11 @@ class ComplaintEndpointTests(TestCase):
 
             complaint_keys = [c['unique_key'] for c in response.data]
 
-            # Should include complaints from district 1 constituents
             self.assertIn('constituent_complaint_1', complaint_keys,
                 "Should include complaints from constituents in user's district")
             self.assertIn('constituent_complaint_2', complaint_keys,
                 "Should include all complaints from constituents in user's district")
 
-            # Should not include complaints from constituents of other districts
             self.assertNotIn('other_constituent_complaint', complaint_keys,
                 "Should not include complaints from constituents of other districts")
 
