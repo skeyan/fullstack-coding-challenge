@@ -22,6 +22,30 @@ const DashboardPage = () => {
   const [error, setError] = useState('');
   const history = useHistory();
 
+  /**
+   * Configuration for complaint table columns
+   * @typedef {Object} TableColumn
+   * @property {string} key - The key to access the data in complaint object
+   * @property {string} header - Display text for the column header
+   * @property {Function} [formatter] - Optional function to format the cell value
+   */
+
+  /**
+   * Defines the structure and formatting of the complaints table
+   * @type {TableColumn[]}
+   */
+  const DASHBOARD_TABLE_COLUMNS = [
+    { key: 'complaint_type', header: 'Type' },
+    { key: 'descriptor', header: 'Description' },
+    { key: 'zip', header: 'Zipcode' },
+    { key: 'borough', header: 'Borough' },
+    { key: 'city', header: 'City' },
+    { key: 'council_dist', header: 'Council District' },
+    { key: 'community_board', header: 'Community Board' },
+    { key: 'opendate', header: 'Open Date' },
+    { key: 'closedate', header: 'Close Date', formatter: (value) => value || 'Open' }
+  ];
+
   useEffect(() => {
     /**
      * Fetches complaints data for the authenticated user's district
@@ -88,25 +112,27 @@ const DashboardPage = () => {
           </div>
           
           <div className="complaint-table-wrapper">
-            <table className="complaint-table">
-              <thead>
+          <table className="complaint-table">
+            <thead>
                 <tr>
-                  <th>Type</th>
-                  <th>Description</th>
-                  <th>Borough</th>
-                  <th>Status</th>
+                    {DASHBOARD_TABLE_COLUMNS.map(column => (
+                        <th key={column.key}>{column.header}</th>
+                    ))}
                 </tr>
-              </thead>
-              <tbody>
+            </thead>
+            <tbody>
                 {complaints.map((complaint) => (
-                  <tr key={complaint.unique_key}>
-                    <td>{complaint.complaint_type}</td>
-                    <td>{complaint.descriptor ? complaint.descriptor : 'Not provided' }</td>
-                    <td>{complaint.borough}</td>
-                    <td>{complaint.closedate ? 'Closed' : 'Open'}</td>
-                  </tr>
+                <tr key={complaint.unique_key}>
+                    {DASHBOARD_TABLE_COLUMNS.map(column => (
+                    <td key={column.key}>
+                        {column.formatter 
+                        ? column.formatter(complaint[column.key])
+                        : complaint[column.key]}
+                    </td>
+                    ))}
+                </tr>
                 ))}
-              </tbody>
+            </tbody>
             </table>
           </div>
         </section>
