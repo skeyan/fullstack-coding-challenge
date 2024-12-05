@@ -5,7 +5,8 @@ import { createMemoryHistory } from 'history';
 import DashboardPage from './DashboardPage';
 
 /* Mocks */
-global.fetch = jest.fn();
+const mockFetch = jest.fn();
+global.fetch = mockFetch;
 
 const mockSessionStorage = {
   getItem: jest.fn(),
@@ -21,7 +22,7 @@ describe('DashboardPage', () => {
 
   beforeEach(() => {
     history = createMemoryHistory();
-    fetch.mockClear();
+    mockFetch.mockClear();
     mockSessionStorage.getItem.mockImplementation(() => 'fake-token');
   });
 
@@ -35,14 +36,32 @@ describe('DashboardPage', () => {
       complaint_type: 'Aging',
       descriptor: 'Senior Centers',
       borough: 'Brooklyn',
-      closedate: '2024-01-01',
+      opendate: '2024-01-01',
+      closedate: '2024-01-15', // Closed case: has both dates
     },
     {
       unique_key: '2',
       complaint_type: 'Health',
       descriptor: 'Rats/Rodents',
       borough: 'Manhattan',
-      closedate: null,
+      opendate: '2024-01-01',
+      closedate: null, // Open case: has open date but no close date
+    },
+    {
+      unique_key: '3',
+      complaint_type: 'Noise',
+      descriptor: 'Loud Music',
+      borough: 'Queens',
+      opendate: null,
+      closedate: null, // Neither open nor closed: no dates
+    },
+    {
+      unique_key: '4',
+      complaint_type: 'Traffic',
+      descriptor: 'Signal',
+      borough: 'Bronx',
+      opendate: null,
+      closedate: '2024-01-20', // Closed case: has close date but no open date
     },
   ];
 
@@ -56,57 +75,91 @@ describe('DashboardPage', () => {
   });
 
   it('renders loading state initially', () => {
-    fetch.mockImplementationOnce(() => new Promise(() => {})); // Never resolves
+    mockFetch.mockImplementationOnce(() => new Promise(() => {}));
     renderWithRouter(<DashboardPage />);
-    expect(screen.getByText('Loading complaints...')).toBeInTheDocument();
+    expect(screen.getByText('Loading dashboard data...')).toBeInTheDocument();
   });
 
-  it('renders dashboard with complaints data', async () => {
-    fetch.mockImplementationOnce(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(mockComplaints),
-      })
-    );
+  it('renders dashboard with all statistics and complaints data', async () => {
+    mockFetch
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockComplaints),
+        })
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([mockComplaints[1]]), // Only the case with opendate and no closedate
+        })
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([mockComplaints[0], mockComplaints[3]]), // Cases with closedate
+        })
+      );
 
     renderWithRouter(<DashboardPage />);
 
     await waitFor(() => {
+      // Check header and stats
       expect(screen.getByText('District Complaints Dashboard')).toBeInTheDocument();
-      expect(screen.getByText('All District Complaints')).toBeInTheDocument();
-      expect(screen.getByText(`Total Complaints: ${mockComplaints.length}`)).toBeInTheDocument();
+
+      const totalComplaints = screen.getByText('Total Complaints').nextSibling;
+      const openCases = screen.getByText('Open Cases').nextSibling;
+      const closedCases = screen.getByText('Closed Cases').nextSibling;
+
+      expect(totalComplaints).toHaveTextContent('4');
+      expect(openCases).toHaveTextContent('1');
+      expect(closedCases).toHaveTextContent('2');
+
+      // Check complaint table data
       expect(screen.getByText('Aging')).toBeInTheDocument();
       expect(screen.getByText('Brooklyn')).toBeInTheDocument();
       expect(screen.getByText('Senior Centers')).toBeInTheDocument();
     });
   });
 
-  it('makes API call with correct auth header', async () => {
-    fetch.mockImplementationOnce(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(mockComplaints),
-      })
-    );
+  it('makes API calls with correct auth headers', async () => {
+    mockFetch
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }));
 
     renderWithRouter(<DashboardPage />);
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(
+      const expectedHeaders = {
+        headers: {
+          Authorization: 'Token fake-token',
+          'Content-Type': 'application/json',
+        },
+      };
+
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        1,
         'http://localhost:8000/api/complaints/allComplaints/',
-        expect.objectContaining({
-          headers: {
-            Authorization: 'Token fake-token',
-            'Content-Type': 'application/json',
-          },
-        })
+        expectedHeaders
+      );
+
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        'http://localhost:8000/api/complaints/openCases/',
+        expectedHeaders
+      );
+
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        3,
+        'http://localhost:8000/api/complaints/closedCases/',
+        expectedHeaders
       );
     });
   });
 
-  it('displays error message when API call fails', async () => {
-    const errorMessage = 'Failed to fetch complaints';
-    fetch.mockImplementationOnce(() =>
+  it('displays error message when any API call fails', async () => {
+    mockFetch.mockImplementationOnce(() =>
       Promise.resolve({
         ok: false,
         status: 500,
@@ -116,17 +169,103 @@ describe('DashboardPage', () => {
     renderWithRouter(<DashboardPage />);
 
     await waitFor(() => {
-      expect(screen.getByText(errorMessage)).toBeInTheDocument();
+      expect(screen.getByText('Failed to fetch dashboard data')).toBeInTheDocument();
     });
   });
 
   it('handles network errors', async () => {
-    fetch.mockImplementationOnce(() => Promise.reject(new Error('Network error')));
-
+    mockFetch.mockImplementationOnce(() => Promise.reject(new Error('Network error')));
     renderWithRouter(<DashboardPage />);
 
     await waitFor(() => {
       expect(screen.getByText('Network error')).toBeInTheDocument();
+    });
+  });
+
+  it('displays correct counts when endpoints return empty arrays', async () => {
+    mockFetch
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([]),
+        })
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([]),
+        })
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([]),
+        })
+      );
+
+    renderWithRouter(<DashboardPage />);
+
+    await waitFor(() => {
+      const totalComplaints = screen.getByText('Total Complaints').nextSibling;
+      const openCases = screen.getByText('Open Cases').nextSibling;
+      const closedCases = screen.getByText('Closed Cases').nextSibling;
+
+      expect(totalComplaints).toHaveTextContent('0');
+      expect(openCases).toHaveTextContent('0');
+      expect(closedCases).toHaveTextContent('0');
+    });
+  });
+
+  it('handles edge cases for dates correctly', async () => {
+    const edgeCaseComplaints = [
+      {
+        unique_key: '1',
+        complaint_type: 'Other',
+        descriptor: 'Test',
+        borough: 'Manhattan',
+        opendate: null,
+        closedate: null,
+      },
+      {
+        unique_key: '2',
+        complaint_type: 'Other',
+        descriptor: 'Test 2',
+        borough: 'Manhattan',
+        opendate: null,
+        closedate: '2024-01-01',
+      },
+    ];
+
+    mockFetch
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(edgeCaseComplaints),
+        })
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([]), // Should be empty (no cases with opendate and no closedate)
+        })
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([edgeCaseComplaints[1]]), // One closed case
+        })
+      );
+
+    renderWithRouter(<DashboardPage />);
+
+    await waitFor(() => {
+      const totalComplaints = screen.getByText('Total Complaints').nextSibling;
+      const openCases = screen.getByText('Open Cases').nextSibling;
+      const closedCases = screen.getByText('Closed Cases').nextSibling;
+
+      expect(totalComplaints).toHaveTextContent('2');
+      expect(openCases).toHaveTextContent('0'); // No cases with opendate and no closedate
+      expect(closedCases).toHaveTextContent('1'); // One case with closedate
     });
   });
 });
