@@ -129,17 +129,17 @@ describe('DashboardPage', () => {
     expect(closedCases).toHaveTextContent('2');
 
     const topComplaintsSection = screen.getByText('Top Complaint Types').closest('.stat-card');
-    within(topComplaintsSection).getByText('Housing and Buildings');
-    within(topComplaintsSection).getByText('(6)');
-    within(topComplaintsSection).getByText('Transportation');
-    within(topComplaintsSection).getByText('(5)');
-    within(topComplaintsSection).getByText('Aging');
-    within(topComplaintsSection).getByText('(3)');
+    expect(within(topComplaintsSection).getByText('Housing and Buildings')).toBeInTheDocument();
+    expect(within(topComplaintsSection).getByText('(6)')).toBeInTheDocument();
+    expect(within(topComplaintsSection).getByText('Transportation')).toBeInTheDocument();
+    expect(within(topComplaintsSection).getByText('(5)')).toBeInTheDocument();
+    expect(within(topComplaintsSection).getByText('Aging')).toBeInTheDocument();
+    expect(within(topComplaintsSection).getByText('(3)')).toBeInTheDocument();
 
     const tableElement = screen.getByRole('table');
-    within(tableElement).getByText('Type');
-    within(tableElement).getByText('Description');
-    within(tableElement).getByText('Borough');
+    expect(within(tableElement).getByText('Type')).toBeInTheDocument();
+    expect(within(tableElement).getByText('Description')).toBeInTheDocument();
+    expect(within(tableElement).getByText('Borough')).toBeInTheDocument();
 
     const rows = within(tableElement).getAllByRole('row');
     const firstRowCells = within(rows[1]).getAllByRole('cell');
