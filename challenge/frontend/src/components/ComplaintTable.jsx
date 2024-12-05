@@ -15,6 +15,7 @@ import PropTypes from 'prop-types';
 
 /**
  * Ordered map that defines the structure and formatting of the complaints table
+ * Array index reflects the order of the table columns shown to the member
  * @type {TableColumn[]}
  */
 export const COMPLAINT_TABLE_COLUMNS = [
