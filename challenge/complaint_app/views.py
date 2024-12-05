@@ -3,6 +3,8 @@ from .models import UserProfile, Complaint
 from .serializers import UserSerializer, UserProfileSerializer, ComplaintSerializer
 from rest_framework.response import Response
 from rest_framework import status
+from django.db.models import Count
+
 # Create your views here.
 
 class ComplaintViewSet(viewsets.ModelViewSet):
@@ -102,4 +104,31 @@ class TopComplaintTypeViewSet(viewsets.ModelViewSet):
   http_method_names = ['get']
   def list(self, request):
     # Get the top 3 complaint types from the user's district
-    return Response()
+    try:
+      user_profile = UserProfile.objects.get(user=request.user)
+
+      district_number = user_profile.district
+      padded_district = f"NYCC{int(district_number):02d}"
+
+      # Top 3 complaint case types
+      topComplaintCaseTypes = (Complaint.objects
+        .filter(account=padded_district)
+        .values('complaint_type')
+        .annotate(count=Count('complaint_type'))
+        .order_by('-count')
+        .values('complaint_type', 'count')
+        [:3]
+      )
+
+      return Response(list(topComplaintCaseTypes), status=status.HTTP_200_OK)
+
+    # Handle bad paths
+    except UserProfile.DoesNotExist:
+        return Response(
+            {"error": "User profile not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
