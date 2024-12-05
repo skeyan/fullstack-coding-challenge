@@ -1,10 +1,9 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import DashboardPage from './DashboardPage';
 
-/* Mocks */
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
@@ -37,7 +36,7 @@ describe('DashboardPage', () => {
       descriptor: 'Senior Centers',
       borough: 'Brooklyn',
       opendate: '2024-01-01',
-      closedate: '2024-01-15', // Closed case: has both dates
+      closedate: '2024-01-15',
     },
     {
       unique_key: '2',
@@ -45,7 +44,7 @@ describe('DashboardPage', () => {
       descriptor: 'Rats/Rodents',
       borough: 'Manhattan',
       opendate: '2024-01-01',
-      closedate: null, // Open case: has open date but no close date
+      closedate: null,
     },
     {
       unique_key: '3',
@@ -53,7 +52,7 @@ describe('DashboardPage', () => {
       descriptor: 'Loud Music',
       borough: 'Queens',
       opendate: null,
-      closedate: null, // Neither open nor closed: no dates
+      closedate: null,
     },
     {
       unique_key: '4',
@@ -61,8 +60,14 @@ describe('DashboardPage', () => {
       descriptor: 'Signal',
       borough: 'Bronx',
       opendate: null,
-      closedate: '2024-01-20', // Closed case: has close date but no open date
+      closedate: '2024-01-20',
     },
+  ];
+
+  const mockTopComplaints = [
+    { complaint_type: 'Housing and Buildings', count: 6 },
+    { complaint_type: 'Transportation', count: 5 },
+    { complaint_type: 'Aging', count: 3 },
   ];
 
   it('redirects to login if no token present', async () => {
@@ -80,7 +85,7 @@ describe('DashboardPage', () => {
     expect(screen.getByText('Loading dashboard data...')).toBeInTheDocument();
   });
 
-  it('renders dashboard with all statistics and complaints data', async () => {
+  it('renders dashboard with correct statistics and table data', async () => {
     mockFetch
       .mockImplementationOnce(() =>
         Promise.resolve({
@@ -91,39 +96,61 @@ describe('DashboardPage', () => {
       .mockImplementationOnce(() =>
         Promise.resolve({
           ok: true,
-          json: () => Promise.resolve([mockComplaints[1]]), // Only the case with opendate and no closedate
+          json: () => Promise.resolve([mockComplaints[1]]),
         })
       )
       .mockImplementationOnce(() =>
         Promise.resolve({
           ok: true,
-          json: () => Promise.resolve([mockComplaints[0], mockComplaints[3]]), // Cases with closedate
+          json: () => Promise.resolve([mockComplaints[0], mockComplaints[3]]),
+        })
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockTopComplaints),
         })
       );
 
     renderWithRouter(<DashboardPage />);
 
     await waitFor(() => {
-      // Check header and stats
-      expect(screen.getByText('District Complaints Dashboard')).toBeInTheDocument();
-
-      const totalComplaints = screen.getByText('Total Complaints').nextSibling;
-      const openCases = screen.getByText('Open Cases').nextSibling;
-      const closedCases = screen.getByText('Closed Cases').nextSibling;
-
-      expect(totalComplaints).toHaveTextContent('4');
-      expect(openCases).toHaveTextContent('1');
-      expect(closedCases).toHaveTextContent('2');
-
-      // Check complaint table data
-      expect(screen.getByText('Aging')).toBeInTheDocument();
-      expect(screen.getByText('Brooklyn')).toBeInTheDocument();
-      expect(screen.getByText('Senior Centers')).toBeInTheDocument();
+      expect(screen.queryByText('Loading dashboard data...')).not.toBeInTheDocument();
     });
+
+    expect(screen.getByText('District Complaints Dashboard')).toBeInTheDocument();
+
+    const totalComplaints = screen.getByText('Total Complaints').nextSibling;
+    const openCases = screen.getByText('Open Cases').nextSibling;
+    const closedCases = screen.getByText('Closed Cases').nextSibling;
+
+    expect(totalComplaints).toHaveTextContent('4');
+    expect(openCases).toHaveTextContent('1');
+    expect(closedCases).toHaveTextContent('2');
+
+    const topComplaintsSection = screen.getByText('Top Complaint Types').closest('.stat-card');
+    expect(within(topComplaintsSection).getByText('Housing and Buildings')).toBeInTheDocument();
+    expect(within(topComplaintsSection).getByText('(6)')).toBeInTheDocument();
+    expect(within(topComplaintsSection).getByText('Transportation')).toBeInTheDocument();
+    expect(within(topComplaintsSection).getByText('(5)')).toBeInTheDocument();
+    expect(within(topComplaintsSection).getByText('Aging')).toBeInTheDocument();
+    expect(within(topComplaintsSection).getByText('(3)')).toBeInTheDocument();
+
+    const tableElement = screen.getByRole('table');
+    expect(within(tableElement).getByText('Type')).toBeInTheDocument();
+    expect(within(tableElement).getByText('Description')).toBeInTheDocument();
+    expect(within(tableElement).getByText('Borough')).toBeInTheDocument();
+
+    const rows = within(tableElement).getAllByRole('row');
+    const firstRowCells = within(rows[1]).getAllByRole('cell');
+    expect(firstRowCells[0]).toHaveTextContent('Aging');
+    expect(firstRowCells[1]).toHaveTextContent('Senior Centers');
+    expect(firstRowCells[3]).toHaveTextContent('Brooklyn');
   });
 
   it('makes API calls with correct auth headers', async () => {
     mockFetch
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
       .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
       .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
       .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }));
@@ -155,6 +182,12 @@ describe('DashboardPage', () => {
         'http://localhost:8000/api/complaints/closedCases/',
         expectedHeaders
       );
+
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        4,
+        'http://localhost:8000/api/complaints/topComplaints/',
+        expectedHeaders
+      );
     });
   });
 
@@ -163,13 +196,14 @@ describe('DashboardPage', () => {
       Promise.resolve({
         ok: false,
         status: 500,
+        json: () => Promise.resolve({ detail: 'Server error' }),
       })
     );
 
     renderWithRouter(<DashboardPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('Failed to fetch dashboard data')).toBeInTheDocument();
+      expect(screen.getByText('Failed to fetch some dashboard data')).toBeInTheDocument();
     });
   });
 
@@ -201,6 +235,12 @@ describe('DashboardPage', () => {
           ok: true,
           json: () => Promise.resolve([]),
         })
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([]),
+        })
       );
 
     renderWithRouter(<DashboardPage />);
@@ -213,6 +253,40 @@ describe('DashboardPage', () => {
       expect(totalComplaints).toHaveTextContent('0');
       expect(openCases).toHaveTextContent('0');
       expect(closedCases).toHaveTextContent('0');
+    });
+  });
+
+  it('handles empty top complaints gracefully', async () => {
+    mockFetch
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([]),
+        })
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([]),
+        })
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([]),
+        })
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([]),
+        })
+      );
+
+    renderWithRouter(<DashboardPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Top Complaint Types')).toBeInTheDocument();
     });
   });
 
@@ -246,13 +320,19 @@ describe('DashboardPage', () => {
       .mockImplementationOnce(() =>
         Promise.resolve({
           ok: true,
-          json: () => Promise.resolve([]), // Should be empty (no cases with opendate and no closedate)
+          json: () => Promise.resolve([]),
         })
       )
       .mockImplementationOnce(() =>
         Promise.resolve({
           ok: true,
-          json: () => Promise.resolve([edgeCaseComplaints[1]]), // One closed case
+          json: () => Promise.resolve([edgeCaseComplaints[1]]),
+        })
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([]),
         })
       );
 
@@ -264,8 +344,8 @@ describe('DashboardPage', () => {
       const closedCases = screen.getByText('Closed Cases').nextSibling;
 
       expect(totalComplaints).toHaveTextContent('2');
-      expect(openCases).toHaveTextContent('0'); // No cases with opendate and no closedate
-      expect(closedCases).toHaveTextContent('1'); // One case with closedate
+      expect(openCases).toHaveTextContent('0');
+      expect(closedCases).toHaveTextContent('1');
     });
   });
 });

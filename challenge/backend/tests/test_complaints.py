@@ -178,3 +178,65 @@ class ComplaintEndpointTests(TestCase):
                 "Closed cases should include complaint with only close date")
             self.assertNotIn('no_dates', closed_keys,
                 "Closed cases should not include complaint with no dates")
+
+    def test_get_top_complaints(self):
+        # Add more test complaints to ensure proper counting
+        Complaint.objects.create(
+            unique_key="noise_case_2",
+            account="NYCC01",
+            complaint_type="Noise",
+            descriptor="Construction",
+            borough="Manhattan"
+        )
+        Complaint.objects.create(
+            unique_key="noise_case_3",
+            account="NYCC01",
+            complaint_type="Noise",
+            descriptor="Party",
+            borough="Manhattan"
+        )
+        Complaint.objects.create(
+            unique_key="traffic_case_2",
+            account="NYCC01",
+            complaint_type="Traffic",
+            descriptor="Parking",
+            borough="Manhattan"
+        )
+
+        with self.subTest("Fetching top complaints"):
+            response = self.client.get('/api/complaints/topComplaints/')
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK,
+                "Request should succeed")
+            self.assertEqual(len(response.data), 3,
+                "Should return top 3 complaint types")
+
+        with self.subTest("Verifying complaint counts"):
+            # Should be 3 Noise, 2 Traffic, 1 each of Others/Parks
+            counts = {item['complaint_type']: item['count'] for item in response.data}
+            self.assertEqual(counts['Noise'], 3,
+                "Noise complaints should be most frequent")
+            self.assertEqual(counts['Traffic'], 2,
+                "Traffic should be second most frequent")
+
+        with self.subTest("Verifying order"):
+            types = [item['complaint_type'] for item in response.data]
+            self.assertEqual(types[0], 'Noise',
+                "Most frequent complaint should be first")
+            self.assertEqual(types[1], 'Traffic',
+                "Second most frequent complaint should be second")
+
+        with self.subTest("Verifying district isolation"):
+            # Add complaint of same type to different district
+            Complaint.objects.create(
+                unique_key="noise_other_district",
+                account="NYCC02",
+                complaint_type="Noise",
+                descriptor="Party",
+                borough="Manhattan"
+            )
+            response = self.client.get('/api/complaints/topComplaints/')
+            noise_count = next(item['count'] for item in response.data
+                            if item['complaint_type'] == 'Noise')
+            self.assertEqual(noise_count, 3,
+                "Count should not include complaints from other districts")

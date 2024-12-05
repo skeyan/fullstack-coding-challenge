@@ -77,7 +77,7 @@
 }
 
 .stat-card h4 {
-  color: #666;
+  color: var(--color-text-tertiary);
   margin: 0;
   font-size: 0.9rem;
   text-transform: uppercase;
@@ -85,10 +85,45 @@
 }
 
 .stat-number {
-  color: #2c3e50;
+  color: var(--color-text-tertiary);
   font-size: 2rem;
   font-weight: bold;
   margin: 0.5rem 0 0;
+}
+
+.stat-card.top-complaints {
+  text-align: left;
+  grid-column: 1 / -1;
+}
+
+.top-complaints-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.top-complaint-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-tertiary);
+}
+
+.complaint-rank {
+  font-weight: bold;
+  min-width: 1.5rem;
+  color: var(--color-text-primary);
+}
+
+.complaint-type {
+  flex: 1;
+  font-weight: 500;
+}
+
+.complaint-count {
+  color: var(--color-text-tertiary);
+  font-weight: 500;
 }
 
 /* Mobile */
