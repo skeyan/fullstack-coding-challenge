@@ -35,7 +35,7 @@ describe('ComplaintTable', () => {
         render(<ComplaintTable complaints={mockComplaints} />);
         
         COMPLAINT_TABLE_COLUMNS.forEach(column => {
-        expect(screen.getByText(column.header)).toBeInTheDocument();
+            expect(screen.getByText(column.header)).toBeInTheDocument();
         });
     });
 
@@ -58,7 +58,7 @@ describe('ComplaintTable', () => {
         render(<ComplaintTable complaints={[]} />);
         
         COMPLAINT_TABLE_COLUMNS.forEach(column => {
-        expect(screen.getByText(column.header)).toBeInTheDocument();
+            expect(screen.getByText(column.header)).toBeInTheDocument();
         });
     });
 });
