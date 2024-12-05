@@ -7,7 +7,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 /**
- * Configuration for complaint table columns
  * @typedef {Object} TableColumn
  * @property {string} key - The key to access the data in complaint object
  * @property {string} header - Display text for the column header
@@ -15,7 +14,7 @@ import PropTypes from 'prop-types';
  */
 
 /**
- * Defines the structure and formatting of the complaints table
+ * Ordered map that defines the structure and formatting of the complaints table
  * @type {TableColumn[]}
  */
 export const COMPLAINT_TABLE_COLUMNS = [
