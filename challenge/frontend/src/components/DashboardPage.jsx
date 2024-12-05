@@ -4,6 +4,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import ComplaintTable from './ComplaintTable';
 import './../styles/DashboardPage.css';
 
 /**
@@ -21,30 +22,6 @@ const DashboardPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const history = useHistory();
-
-  /**
-   * Configuration for complaint table columns
-   * @typedef {Object} TableColumn
-   * @property {string} key - The key to access the data in complaint object
-   * @property {string} header - Display text for the column header
-   * @property {Function} [formatter] - Optional function to format the cell value
-   */
-
-  /**
-   * Defines the structure and formatting of the complaints table
-   * @type {TableColumn[]}
-   */
-  const DASHBOARD_TABLE_COLUMNS = [
-    { key: 'complaint_type', header: 'Type' },
-    { key: 'descriptor', header: 'Description' },
-    { key: 'zip', header: 'Zipcode' },
-    { key: 'borough', header: 'Borough' },
-    { key: 'city', header: 'City' },
-    { key: 'council_dist', header: 'Council District' },
-    { key: 'community_board', header: 'Community Board' },
-    { key: 'opendate', header: 'Open Date' },
-    { key: 'closedate', header: 'Close Date', formatter: (value) => value || 'Open' }
-  ];
 
   useEffect(() => {
     /**
@@ -112,28 +89,7 @@ const DashboardPage = () => {
           </div>
           
           <div className="complaint-table-wrapper">
-          <table className="complaint-table">
-            <thead>
-                <tr>
-                    {DASHBOARD_TABLE_COLUMNS.map(column => (
-                        <th key={column.key}>{column.header}</th>
-                    ))}
-                </tr>
-            </thead>
-            <tbody>
-                {complaints.map((complaint) => (
-                <tr key={complaint.unique_key}>
-                    {DASHBOARD_TABLE_COLUMNS.map(column => (
-                    <td key={column.key}>
-                        {column.formatter 
-                        ? column.formatter(complaint[column.key])
-                        : complaint[column.key]}
-                    </td>
-                    ))}
-                </tr>
-                ))}
-            </tbody>
-            </table>
+            <ComplaintTable complaints={complaints} />
           </div>
         </section>
       </div>
