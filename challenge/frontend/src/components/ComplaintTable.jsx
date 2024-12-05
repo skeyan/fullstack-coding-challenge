@@ -27,17 +27,17 @@ export const COMPLAINT_TABLE_COLUMNS = [
   { key: 'council_dist', header: 'Council District' },
   { key: 'community_board', header: 'Community Board' },
   { key: 'opendate', header: 'Open Date' },
-  { key: 'closedate', header: 'Close Date', formatter: (value) => value || 'Open' }
+  { key: 'closedate', header: 'Close Date', formatter: value => value || 'Open' },
 ];
 
 /**
  * ComplaintTable component renders a table of complaint data
- * 
+ *
  * @component
  * @param {Object} props - Component props
  * @param {Array} props.complaints - Array of complaint objects to display
  * @returns {JSX.Element} Table containing complaint data
- * 
+ *
  * @example
  * <ComplaintTable complaints={complaintData} />
  */
@@ -51,13 +51,11 @@ const ComplaintTable = ({ complaints }) => (
       </tr>
     </thead>
     <tbody>
-      {complaints.map((complaint) => (
+      {complaints.map(complaint => (
         <tr key={complaint.unique_key}>
           {COMPLAINT_TABLE_COLUMNS.map(column => (
             <td key={column.key}>
-              {column.formatter 
-                ? column.formatter(complaint[column.key])
-                : complaint[column.key]}
+              {column.formatter ? column.formatter(complaint[column.key]) : complaint[column.key]}
             </td>
           ))}
         </tr>
@@ -67,18 +65,20 @@ const ComplaintTable = ({ complaints }) => (
 );
 
 ComplaintTable.propTypes = {
-  complaints: PropTypes.arrayOf(PropTypes.shape({
-    unique_key: PropTypes.string.isRequired,
-    complaint_type: PropTypes.string,
-    descriptor: PropTypes.string,
-    zip: PropTypes.string,
-    borough: PropTypes.string,
-    city: PropTypes.string,
-    council_dist: PropTypes.string,
-    community_board: PropTypes.string,
-    opendate: PropTypes.string,
-    closedate: PropTypes.string
-  })).isRequired
+  complaints: PropTypes.arrayOf(
+    PropTypes.shape({
+      unique_key: PropTypes.string.isRequired,
+      complaint_type: PropTypes.string,
+      descriptor: PropTypes.string,
+      zip: PropTypes.string,
+      borough: PropTypes.string,
+      city: PropTypes.string,
+      council_dist: PropTypes.string,
+      community_board: PropTypes.string,
+      opendate: PropTypes.string,
+      closedate: PropTypes.string,
+    })
+  ).isRequired,
 };
 
 export default ComplaintTable;

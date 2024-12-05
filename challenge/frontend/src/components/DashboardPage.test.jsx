@@ -10,10 +10,10 @@ global.fetch = jest.fn();
 const mockSessionStorage = {
   getItem: jest.fn(),
   setItem: jest.fn(),
-  clear: jest.fn()
+  clear: jest.fn(),
 };
 Object.defineProperty(window, 'sessionStorage', {
-  value: mockSessionStorage
+  value: mockSessionStorage,
 });
 
 describe('DashboardPage', () => {
@@ -25,12 +25,8 @@ describe('DashboardPage', () => {
     mockSessionStorage.getItem.mockImplementation(() => 'fake-token');
   });
 
-  const renderWithRouter = (component) => {
-    return render(
-      <Router history={history}>
-        {component}
-      </Router>
-    );
+  const renderWithRouter = component => {
+    return render(<Router history={history}>{component}</Router>);
   };
 
   const mockComplaints = [
@@ -39,15 +35,15 @@ describe('DashboardPage', () => {
       complaint_type: 'Aging',
       descriptor: 'Senior Centers',
       borough: 'Brooklyn',
-      closedate: '2024-01-01'
+      closedate: '2024-01-01',
     },
     {
       unique_key: '2',
       complaint_type: 'Health',
       descriptor: 'Rats/Rodents',
       borough: 'Manhattan',
-      closedate: null
-    }
+      closedate: null,
+    },
   ];
 
   it('redirects to login if no token present', async () => {
@@ -66,10 +62,10 @@ describe('DashboardPage', () => {
   });
 
   it('renders dashboard with complaints data', async () => {
-    fetch.mockImplementationOnce(() => 
+    fetch.mockImplementationOnce(() =>
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve(mockComplaints)
+        json: () => Promise.resolve(mockComplaints),
       })
     );
 
@@ -86,10 +82,10 @@ describe('DashboardPage', () => {
   });
 
   it('makes API call with correct auth header', async () => {
-    fetch.mockImplementationOnce(() => 
+    fetch.mockImplementationOnce(() =>
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve(mockComplaints)
+        json: () => Promise.resolve(mockComplaints),
       })
     );
 
@@ -100,7 +96,7 @@ describe('DashboardPage', () => {
         'http://localhost:8000/api/complaints/allComplaints/',
         expect.objectContaining({
           headers: {
-            'Authorization': 'Token fake-token',
+            Authorization: 'Token fake-token',
             'Content-Type': 'application/json',
           },
         })
@@ -110,10 +106,10 @@ describe('DashboardPage', () => {
 
   it('displays error message when API call fails', async () => {
     const errorMessage = 'Failed to fetch complaints';
-    fetch.mockImplementationOnce(() => 
+    fetch.mockImplementationOnce(() =>
       Promise.resolve({
         ok: false,
-        status: 500
+        status: 500,
       })
     );
 

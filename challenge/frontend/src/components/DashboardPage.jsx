@@ -11,9 +11,9 @@ import './../styles/DashboardPage.css';
  * Dashboard component displays complaints data for the logged-in council member's district.
  * Fetches and displays tabular data of all complaints with their details.
  * Requires authentication token in sessionStorage to access data.
- * 
+ *
  * @todo Add num closed complaints, num open complaints, top type of complaints in their district
- * 
+ *
  * @example
  * <Route path="/dashboard" component={Dashboard} />
  */
@@ -27,7 +27,7 @@ const DashboardPage = () => {
     /**
      * Fetches complaints data for the authenticated user's district
      * Redirects to login if no authentication token is found
-     * 
+     *
      * @async
      * @function fetchComplaints
      * @throws {Error} When API call fails or returns non-OK response
@@ -42,7 +42,7 @@ const DashboardPage = () => {
       try {
         const response = await fetch('http://localhost:8000/api/complaints/allComplaints/', {
           headers: {
-            'Authorization': `Token ${token}`,
+            Authorization: `Token ${token}`,
             'Content-Type': 'application/json',
           },
         });
@@ -87,7 +87,7 @@ const DashboardPage = () => {
             <h3 className="section-title">All District Complaints</h3>
             <p className="complaint-count">Total Complaints: {complaints.length}</p>
           </div>
-          
+
           <div className="complaint-table-wrapper">
             <ComplaintTable complaints={complaints} />
           </div>

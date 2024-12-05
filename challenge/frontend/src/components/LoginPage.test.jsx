@@ -10,10 +10,10 @@ global.fetch = jest.fn();
 const mockSessionStorage = {
   getItem: jest.fn(),
   setItem: jest.fn(),
-  clear: jest.fn()
+  clear: jest.fn(),
 };
 Object.defineProperty(window, 'sessionStorage', {
-  value: mockSessionStorage
+  value: mockSessionStorage,
 });
 
 describe('LoginPage', () => {
@@ -26,17 +26,13 @@ describe('LoginPage', () => {
     mockSessionStorage.setItem.mockClear();
   });
 
-  const renderWithRouter = (component) => {
-    return render(
-      <Router history={history}>
-        {component}
-      </Router>
-    );
+  const renderWithRouter = component => {
+    return render(<Router history={history}>{component}</Router>);
   };
 
   it('renders login form elements', () => {
     renderWithRouter(<LoginPage />);
-    
+
     expect(screen.getByText('NYC Council Dashboard')).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/username/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
@@ -45,7 +41,7 @@ describe('LoginPage', () => {
 
   it('handles input changes', () => {
     renderWithRouter(<LoginPage />);
-    
+
     const usernameInput = screen.getByPlaceholderText(/username/i);
     const passwordInput = screen.getByPlaceholderText(/password/i);
 
@@ -57,20 +53,20 @@ describe('LoginPage', () => {
   });
 
   it('handles successful login', async () => {
-    fetch.mockImplementationOnce(() => 
+    fetch.mockImplementationOnce(() =>
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({ token: 'fake-token' })
+        json: () => Promise.resolve({ token: 'fake-token' }),
       })
     );
 
     renderWithRouter(<LoginPage />);
 
     fireEvent.change(screen.getByPlaceholderText(/username/i), {
-      target: { value: 'jdoe' }
+      target: { value: 'jdoe' },
     });
     fireEvent.change(screen.getByPlaceholderText(/password/i), {
-      target: { value: 'doe-1' }
+      target: { value: 'doe-1' },
     });
     fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
@@ -81,20 +77,20 @@ describe('LoginPage', () => {
   });
 
   it('displays error message on failed login', async () => {
-    fetch.mockImplementationOnce(() => 
+    fetch.mockImplementationOnce(() =>
       Promise.resolve({
         ok: false,
-        json: () => Promise.resolve({ detail: 'Invalid credentials' })
+        json: () => Promise.resolve({ detail: 'Invalid credentials' }),
       })
     );
 
     renderWithRouter(<LoginPage />);
 
     fireEvent.change(screen.getByPlaceholderText(/username/i), {
-      target: { value: 'wrong' }
+      target: { value: 'wrong' },
     });
     fireEvent.change(screen.getByPlaceholderText(/password/i), {
-      target: { value: 'wrong' }
+      target: { value: 'wrong' },
     });
     fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
@@ -104,17 +100,22 @@ describe('LoginPage', () => {
   });
 
   it('shows loading state during login attempt', async () => {
-    fetch.mockImplementationOnce(() => 
-      new Promise(resolve => setTimeout(() => 
-        resolve({
-          ok: true,
-          json: () => Promise.resolve({ token: 'fake-token' })
-        }), 100)
-      )
+    fetch.mockImplementationOnce(
+      () =>
+        new Promise(resolve =>
+          setTimeout(
+            () =>
+              resolve({
+                ok: true,
+                json: () => Promise.resolve({ token: 'fake-token' }),
+              }),
+            100
+          )
+        )
     );
 
     renderWithRouter(<LoginPage />);
-    
+
     const submitButton = screen.getByRole('button', { name: /sign in/i });
     fireEvent.click(submitButton);
 

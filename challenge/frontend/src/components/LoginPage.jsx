@@ -30,13 +30,13 @@ const LoginPage = () => {
    * Makes a POST request to the login endpoint and handles the authentication response.
    * On success: Stores token in sessionStorage and redirects to dashboard
    * On failure: Displays error message to user
-   * 
+   *
    * @async
    * @param {React.FormEvent<HTMLFormElement>} e - Form submission event
    * @throws {Error} If server request fails or returns non-OK response
    * @returns {Promise<void>}
    */
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
@@ -64,15 +64,13 @@ const LoginPage = () => {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
           <h2 className="login-title">NYC Council Dashboard</h2>
-          <p className="login-subtitle">
-            Please sign in with your council credentials.
-          </p>
+          <p className="login-subtitle">Please sign in with your council credentials.</p>
         </div>
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="form-group">
@@ -87,7 +85,7 @@ const LoginPage = () => {
               className="form-input"
               placeholder="Username (e.g., jdoe)"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={e => setUsername(e.target.value)}
             />
           </div>
           <div className="form-group">
@@ -102,23 +100,15 @@ const LoginPage = () => {
               className="form-input"
               placeholder="Password (e.g., doe-1)"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
             />
           </div>
 
           {/* Display error message if login unsuccessful */}
-          {error && (
-            <div className="error-message">
-              {error}
-            </div>
-          )}
+          {error && <div className="error-message">{error}</div>}
 
           <div className="form-group">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="submit-button"
-            >
+            <button type="submit" disabled={isLoading} className="submit-button">
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
