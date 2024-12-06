@@ -290,6 +290,22 @@ describe('Constituent View Tests', () => {
     expect(screen.getByText('All District Complaints')).toBeInTheDocument();
     const toggleButton = screen.getByText("Show My Constituents' Complaints");
     expect(toggleButton).toBeInTheDocument();
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8000/api/complaints/allComplaints/',
+      expect.any(Object)
+    );
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8000/api/complaints/openCases/',
+      expect.any(Object)
+    );
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8000/api/complaints/closedCases/',
+      expect.any(Object)
+    );
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8000/api/complaints/topComplaints/',
+      expect.any(Object)
+    );
 
     toggleButton.click();
 
@@ -298,10 +314,6 @@ describe('Constituent View Tests', () => {
       expect(screen.getByText('Show All District Complaints')).toBeInTheDocument();
     });
 
-    expect(mockFetch).toHaveBeenCalledWith(
-      'http://localhost:8000/api/complaints/allComplaints/?constituent=true',
-      expect.any(Object)
-    );
     expect(mockFetch).toHaveBeenCalledWith(
       'http://localhost:8000/api/complaints/openCases/?constituent=true',
       expect.any(Object)
@@ -312,6 +324,10 @@ describe('Constituent View Tests', () => {
     );
     expect(mockFetch).toHaveBeenCalledWith(
       'http://localhost:8000/api/complaints/topComplaints/?constituent=true',
+      expect.any(Object)
+    );
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8000/api/complaints/constituentComplaints/',
       expect.any(Object)
     );
   });

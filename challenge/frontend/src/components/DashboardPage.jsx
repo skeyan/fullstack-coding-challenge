@@ -25,6 +25,18 @@ const DashboardPage = () => {
   const [showConstituents, setShowConstituents] = useState(false);
   const history = useHistory();
 
+  /**
+   * Fetches all dashboard data including complaints, cases, and complaint types.
+   * Uses different endpoints based on whether viewing district or constituent complaints.
+   * Requires authentication token.
+   *
+   * @async
+   * @function fetchDashboardData
+   * @param {boolean} isConstituentView - Whether to fetch constituent complaints instead of district complaints
+   * @returns {Promise<boolean>} True if all data fetched successfully, false if any request fails
+   * @throws {Error} When requests fail or return non-OK response
+   * @redirects to login page if no authentication token found
+   */
   const fetchDashboardData = useCallback(
     async (isConstituentView = false) => {
       const token = sessionStorage.getItem('token');
@@ -39,19 +51,25 @@ const DashboardPage = () => {
       };
 
       try {
-        const constituentParam = isConstituentView ? '?constituent=true' : '';
+        const complaintsEndpoint = isConstituentView
+          ? 'http://localhost:8000/api/complaints/constituentComplaints/'
+          : 'http://localhost:8000/api/complaints/allComplaints/';
 
+        // Make use of the viewsets and fetch all data in parallel
         const [complaintsResponse, openResponse, closedResponse, topResponse] = await Promise.all([
-          fetch(`http://localhost:8000/api/complaints/allComplaints/${constituentParam}`, {
-            headers,
-          }),
-          fetch(`http://localhost:8000/api/complaints/openCases/${constituentParam}`, { headers }),
-          fetch(`http://localhost:8000/api/complaints/closedCases/${constituentParam}`, {
-            headers,
-          }),
-          fetch(`http://localhost:8000/api/complaints/topComplaints/${constituentParam}`, {
-            headers,
-          }),
+          fetch(complaintsEndpoint, { headers }),
+          fetch(
+            `http://localhost:8000/api/complaints/openCases/${isConstituentView ? '?constituent=true' : ''}`,
+            { headers }
+          ),
+          fetch(
+            `http://localhost:8000/api/complaints/closedCases/${isConstituentView ? '?constituent=true' : ''}`,
+            { headers }
+          ),
+          fetch(
+            `http://localhost:8000/api/complaints/topComplaints/${isConstituentView ? '?constituent=true' : ''}`,
+            { headers }
+          ),
         ]);
 
         if (!complaintsResponse.ok || !openResponse.ok || !closedResponse.ok || !topResponse.ok) {
@@ -78,6 +96,16 @@ const DashboardPage = () => {
     [history]
   );
 
+  /**
+   * Handles toggling between district and constituent complaint views.
+   * Sets loading state, fetches appropriate data, and updates view state on success.
+   * Only updates view state if data fetch is successful
+   *
+   * @async
+   * @function handleViewToggle
+   * @throws {Error} When data fetch fails
+   * @returns {Promise<void>}
+   */
   const handleViewToggle = async () => {
     setIsLoading(true);
     try {
