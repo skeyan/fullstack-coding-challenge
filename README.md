@@ -22,16 +22,25 @@ Eva Yan - December 2024
 6. Recorded changes taken for each bucket/stories in a separate Google doc.
 7. Went through each bucket sequentially, performing small refactors and adding tests as needed as a sanity check.
 
-### Video
+### Screenshots
 
-TBA
+![image](https://github.com/user-attachments/assets/8a84f622-3bd1-4105-9755-9790a7131a7c)
+Wrong credentials:
+![image](https://github.com/user-attachments/assets/8aefa090-8304-4e85-970d-b3b049695616)
+
+
+![image](https://github.com/user-attachments/assets/ddcb4cfd-5537-4ed2-a3e9-6e116f8b8d1c)
+![image](https://github.com/user-attachments/assets/ff572138-ee57-43e0-8a69-c9238b66eba0)
+![image](https://github.com/user-attachments/assets/ec847f35-7a80-40b3-8e95-5b474f95d40b)
+![image](https://github.com/user-attachments/assets/088925a2-ee01-43b2-9a1b-ada9c81b1d92)
+
 
 ### Features
 
-[X] Council member can login with their username and password
-[X] Council member can view a dashboard page with select statistics of total open and closed cases, and top 3 complaints and count
-[X] Council member can view a tabular display of all complaints made within their district by any constituents
-[X] Council member can trigger a button to replace both the tabular display and the select statistics for complaints made by constituents in their district
+- [X] Council member can login with their username and password
+- [X] Council member can view a dashboard page with select statistics of total open and closed cases, and top 3 complaints and count
+- [X] Council member can view a tabular display of all complaints made within their district by any constituents
+- [X] Council member can trigger a button to replace both the tabular display and the select statistics for complaints made by constituents in their district
 
 ### Notes
 
