@@ -1,7 +1,3 @@
-/**
- * @fileoverview Statistics section component displaying complaint metrics
- * @module components/StatsSection
- */
 import React from 'react';
 import PropTypes from 'prop-types';
 import './../styles/StatsSection.css';

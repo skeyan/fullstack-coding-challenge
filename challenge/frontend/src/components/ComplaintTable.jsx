@@ -1,8 +1,3 @@
-/**
- * @fileoverview ComplaintTable component for displaying complaint data in tabular format
- * @module components/ComplaintTable
- */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import './../styles/ComplaintTable.css';

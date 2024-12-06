@@ -1,7 +1,3 @@
-/**
- * @fileoverview LoginPage component that handles user authentication for NYC Council Dashboard
- * @module components/LoginPage
- */
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import './../styles/LoginPage.css';

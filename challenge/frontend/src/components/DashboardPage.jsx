@@ -1,7 +1,3 @@
-/**
- * @fileoverview Dashboard component with clear sections and minimal table enhancements
- * @module components/DashboardPage
- */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import ComplaintTable from './ComplaintTable';
