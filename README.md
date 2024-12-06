@@ -57,7 +57,6 @@ Mobile example:
 - https://github.com/testing-library/dom-testing-library/releases/tag/v7.0.0
 - https://testing-library.com/docs/react-testing-library/intro
 - https://docs.djangoproject.com/en/5.1/ref/models/querysets/#field-lookups
-- https://docs.djangoproject.com/en/5.1/ref/models/querysets/#field-lookups
 - https://docs.djangoproject.com/en/5.0/topics/db/aggregation/
 - https://docs.djangoproject.com/en/5.0/topics/db/queries/
 - https://www.django-rest-framework.org/api-guide/fields/#source
