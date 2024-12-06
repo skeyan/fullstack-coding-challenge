@@ -5,6 +5,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import ComplaintTable from './ComplaintTable';
+import StatsSection from './StatsSection';
 import './../styles/DashboardPage.css';
 
 /**
@@ -55,7 +56,6 @@ const DashboardPage = () => {
           ? 'http://localhost:8000/api/complaints/constituentComplaints/'
           : 'http://localhost:8000/api/complaints/allComplaints/';
 
-        // Make use of the viewsets and fetch all data
         const [complaintsResponse, openResponse, closedResponse, topResponse] = await Promise.all([
           fetch(complaintsEndpoint, { headers }),
           fetch(
@@ -122,14 +122,6 @@ const DashboardPage = () => {
   };
 
   useEffect(() => {
-    /**
-     * Fetches all required data for the dashboard
-     * Redirects to login if no authentication token is found
-     *
-     * @async
-     * @function fetchDashboardData
-     * @throws {Error} When API calls fail or return non-OK response
-     */
     const loadInitialData = async () => {
       await fetchDashboardData(false);
       setIsLoading(false);
@@ -157,36 +149,12 @@ const DashboardPage = () => {
 
         {error && <div className="dashboard-error">{error}</div>}
 
-        <section className="dashboard-stats">
-          <div className="stats-grid">
-            <div className="stat-card">
-              <h4>Total Complaints</h4>
-              <p className="stat-number">{complaints.length}</p>
-            </div>
-            <div className="stat-card">
-              <h4>Open Cases</h4>
-              <p className="stat-number">{openCases}</p>
-            </div>
-            <div className="stat-card">
-              <h4>Closed Cases</h4>
-              <p className="stat-number">{closedCases}</p>
-            </div>
-            <div className="stat-card">
-              <div className="stat-card top-complaints">
-                <h4>Top Complaint Types</h4>
-                <div className="top-complaints-list">
-                  {topThreeTypes.map((type, index) => (
-                    <div key={type.complaint_type} className="top-complaint-item">
-                      <span className="complaint-rank">{index + 1}.</span>
-                      <span className="complaint-type">{type.complaint_type}</span>
-                      <span className="complaint-count">({type.count})</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <StatsSection
+          totalComplaints={complaints.length}
+          openCases={openCases}
+          closedCases={closedCases}
+          topThreeTypes={topThreeTypes}
+        />
 
         <section className="dashboard-section">
           <div className="section-header">
