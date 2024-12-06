@@ -40,8 +40,8 @@
 .dashboard-section {
   background-color: var(--color-white);
   border-radius: var(--spacing-1);
-  padding: var(--spacing-2);
   margin-top: var(--spacing-4);
+  padding: var(--spacing-2);
 }
 
 .section-header {
@@ -53,110 +53,38 @@
 
 .section-title {
   color: var(--color-text-primary);
+  flex: 1;
   font-size: var(--text-xl);
   margin: 0;
 }
 
-.dashboard-stats {
-  margin: 2rem 0;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.stat-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.stat-card h4 {
-  color: var(--color-text-tertiary);
-  margin: 0;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.stat-number {
-  color: var(--color-text-tertiary);
-  font-size: 2rem;
-  font-weight: bold;
-  margin: 0.5rem 0 0;
-}
-
-.stat-card.top-complaints {
-  text-align: left;
-  grid-column: 1 / -1;
-}
-
-.top-complaints-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-.top-complaint-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--color-text-tertiary);
-}
-
-.complaint-rank {
-  font-weight: bold;
-  min-width: 1.5rem;
-  color: var(--color-text-primary);
-}
-
-.complaint-type {
-  flex: 1;
-  font-weight: 500;
-}
-
-.complaint-count {
-  color: var(--color-text-tertiary);
-  font-weight: 500;
-}
-
-.section-title {
-  flex: 1;
-}
-
 .section-title-row {
+  align-items: center;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-2);
   width: 100%;
 }
 
 .view-toggle-button {
-  padding: 0.5rem 1rem;
-  background-color: #0066cc;
-  color: white;
+  background-color: var(--color-primary);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--spacing-1);
+  color: var(--color-white);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
+  margin-left: auto;
+  padding: var(--spacing-1) var(--spacing-2);
   transition: background-color 0.2s;
   white-space: nowrap;
-  margin-left: auto;
 }
 
 .view-toggle-button:hover {
-  background-color: #0052a3;
+  background-color: var(--color-primary-dark);
 }
 
 .view-toggle-button:active {
-  background-color: #004080;
+  background-color: var(--color-primary-dark);
 }
 
 .complaint-table-wrapper {
@@ -175,12 +103,12 @@
 
   .dashboard-main {
     border-radius: 0;
-    padding: var(--spacing-2);
     max-width: 100%;
+    padding: var(--spacing-2);
   }
 
   .dashboard-title {
-    font-size: 1.75rem;
+    font-size: var(--text-xl);
   }
 
   .section-header {
@@ -189,29 +117,13 @@
     gap: var(--spacing-1);
   }
 
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .stat-card {
-    padding: 1.25rem;
-  }
-
-  .stat-card h4 {
-    font-size: 1.1rem;
-  }
-
-  .stat-number {
-    font-size: 2.5rem;
-  }
-
   .section-title-row {
-    flex-direction: column;
     align-items: stretch;
+    flex-direction: column;
   }
 
   .section-title {
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--spacing-1);
   }
 
   .view-toggle-button {
