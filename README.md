@@ -64,7 +64,7 @@ Mobile example:
 
 ### Reflections
 
-It was a new but fun experience learning Django and DRF after working a lot with Ember at my current job.
+It was a new but fun experience learning Django and DRF after working a lot with Ember at my current job. There is a lot about DRF/Django that is new to me and I also reviewed React docs as well, so it was a definite learning experience. Overall, I enjoyed the challenge.
 
 ---
 
