@@ -55,7 +55,7 @@ const DashboardPage = () => {
           ? 'http://localhost:8000/api/complaints/constituentComplaints/'
           : 'http://localhost:8000/api/complaints/allComplaints/';
 
-        // Make use of the viewsets and fetch all data in parallel
+        // Make use of the viewsets and fetch all data
         const [complaintsResponse, openResponse, closedResponse, topResponse] = await Promise.all([
           fetch(complaintsEndpoint, { headers }),
           fetch(
