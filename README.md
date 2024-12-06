@@ -28,10 +28,12 @@ Eva Yan - December 2024
 Wrong credentials:
 ![image](https://github.com/user-attachments/assets/8aefa090-8304-4e85-970d-b3b049695616)
 
-
+Dashboard:
 ![image](https://github.com/user-attachments/assets/ddcb4cfd-5537-4ed2-a3e9-6e116f8b8d1c)
+Dashboard toggling:
 ![image](https://github.com/user-attachments/assets/ff572138-ee57-43e0-8a69-c9238b66eba0)
 ![image](https://github.com/user-attachments/assets/ec847f35-7a80-40b3-8e95-5b474f95d40b)
+Mobile example:
 ![image](https://github.com/user-attachments/assets/088925a2-ee01-43b2-9a1b-ada9c81b1d92)
 
 
