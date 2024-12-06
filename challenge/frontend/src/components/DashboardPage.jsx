@@ -2,7 +2,7 @@
  * @fileoverview Dashboard component with clear sections and minimal table enhancements
  * @module components/DashboardPage
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import ComplaintTable from './ComplaintTable';
 import './../styles/DashboardPage.css';
@@ -25,59 +25,58 @@ const DashboardPage = () => {
   const [showConstituents, setShowConstituents] = useState(false);
   const history = useHistory();
 
-  const fetchDashboardData = async (isConstituentView = false) => {
-    const token = sessionStorage.getItem('token');
-    if (!token) {
-      history.push('/');
-      return;
-    }
-
-    const headers = {
-      Authorization: `Token ${token}`,
-      'Content-Type': 'application/json',
-    };
-
-    try {
-      // Add constituent parameter to endpoints when in constituent view
-      const constituentParam = isConstituentView ? '?constituent=true' : '';
-
-      // Fetch all data in parallel
-      const [complaintsResponse, openResponse, closedResponse, topResponse] = await Promise.all([
-        fetch(`http://localhost:8000/api/complaints/allComplaints/${constituentParam}`, {
-          headers,
-        }),
-        fetch(`http://localhost:8000/api/complaints/openCases/${constituentParam}`, { headers }),
-        fetch(`http://localhost:8000/api/complaints/closedCases/${constituentParam}`, {
-          headers,
-        }),
-        fetch(`http://localhost:8000/api/complaints/topComplaints/${constituentParam}`, {
-          headers,
-        }),
-      ]);
-
-      // Check if any request failed
-      if (!complaintsResponse.ok || !openResponse.ok || !closedResponse.ok || !topResponse.ok) {
-        throw new Error('Failed to fetch some dashboard data');
+  const fetchDashboardData = useCallback(
+    async (isConstituentView = false) => {
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        history.push('/');
+        return;
       }
 
-      // Parse all responses
-      const [complaintsData, openData, closedData, topData] = await Promise.all([
-        complaintsResponse.json(),
-        openResponse.json(),
-        closedResponse.json(),
-        topResponse.json(),
-      ]);
+      const headers = {
+        Authorization: `Token ${token}`,
+        'Content-Type': 'application/json',
+      };
 
-      setComplaints(complaintsData);
-      setOpenCases(openData.length);
-      setClosedCases(closedData.length);
-      setTopThreeTypes(topData);
-      return true;
-    } catch (err) {
-      setError(err.message);
-      return false;
-    }
-  };
+      try {
+        const constituentParam = isConstituentView ? '?constituent=true' : '';
+
+        const [complaintsResponse, openResponse, closedResponse, topResponse] = await Promise.all([
+          fetch(`http://localhost:8000/api/complaints/allComplaints/${constituentParam}`, {
+            headers,
+          }),
+          fetch(`http://localhost:8000/api/complaints/openCases/${constituentParam}`, { headers }),
+          fetch(`http://localhost:8000/api/complaints/closedCases/${constituentParam}`, {
+            headers,
+          }),
+          fetch(`http://localhost:8000/api/complaints/topComplaints/${constituentParam}`, {
+            headers,
+          }),
+        ]);
+
+        if (!complaintsResponse.ok || !openResponse.ok || !closedResponse.ok || !topResponse.ok) {
+          throw new Error('Failed to fetch some dashboard data');
+        }
+
+        const [complaintsData, openData, closedData, topData] = await Promise.all([
+          complaintsResponse.json(),
+          openResponse.json(),
+          closedResponse.json(),
+          topResponse.json(),
+        ]);
+
+        setComplaints(complaintsData);
+        setOpenCases(openData.length);
+        setClosedCases(closedData.length);
+        setTopThreeTypes(topData);
+        return true;
+      } catch (err) {
+        setError(err.message);
+        return false;
+      }
+    },
+    [history]
+  );
 
   const handleViewToggle = async () => {
     setIsLoading(true);
@@ -109,7 +108,7 @@ const DashboardPage = () => {
     };
 
     loadInitialData();
-  }, [history]);
+  }, [fetchDashboardData]);
 
   if (isLoading) {
     return (
