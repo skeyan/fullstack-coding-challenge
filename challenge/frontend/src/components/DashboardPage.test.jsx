@@ -73,7 +73,6 @@ describe('DashboardPage', () => {
   it('redirects to login if no token present', async () => {
     mockSessionStorage.getItem.mockImplementationOnce(() => null);
     renderWithRouter(<DashboardPage />);
-
     await waitFor(() => {
       expect(history.location.pathname).toBe('/');
     });
@@ -88,16 +87,10 @@ describe('DashboardPage', () => {
   it('renders dashboard with correct statistics and table data', async () => {
     mockFetch
       .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(mockComplaints),
-        })
+        Promise.resolve({ ok: true, json: () => Promise.resolve(mockComplaints) })
       )
       .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([mockComplaints[1]]),
-        })
+        Promise.resolve({ ok: true, json: () => Promise.resolve([mockComplaints[1]]) })
       )
       .mockImplementationOnce(() =>
         Promise.resolve({
@@ -106,10 +99,7 @@ describe('DashboardPage', () => {
         })
       )
       .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(mockTopComplaints),
-        })
+        Promise.resolve({ ok: true, json: () => Promise.resolve(mockTopComplaints) })
       );
 
     renderWithRouter(<DashboardPage />);
@@ -149,20 +139,15 @@ describe('DashboardPage', () => {
   });
 
   it('makes API calls with correct auth headers', async () => {
-    mockFetch
-      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
-      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
-      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
-      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }));
+    mockFetch.mockImplementation(() =>
+      Promise.resolve({ ok: true, json: () => Promise.resolve([]) })
+    );
 
     renderWithRouter(<DashboardPage />);
 
     await waitFor(() => {
       const expectedHeaders = {
-        headers: {
-          Authorization: 'Token fake-token',
-          'Content-Type': 'application/json',
-        },
+        headers: { Authorization: 'Token fake-token', 'Content-Type': 'application/json' },
       };
 
       expect(mockFetch).toHaveBeenNthCalledWith(
@@ -170,19 +155,16 @@ describe('DashboardPage', () => {
         'http://localhost:8000/api/complaints/allComplaints/',
         expectedHeaders
       );
-
       expect(mockFetch).toHaveBeenNthCalledWith(
         2,
         'http://localhost:8000/api/complaints/openCases/',
         expectedHeaders
       );
-
       expect(mockFetch).toHaveBeenNthCalledWith(
         3,
         'http://localhost:8000/api/complaints/closedCases/',
         expectedHeaders
       );
-
       expect(mockFetch).toHaveBeenNthCalledWith(
         4,
         'http://localhost:8000/api/complaints/topComplaints/',
@@ -192,16 +174,8 @@ describe('DashboardPage', () => {
   });
 
   it('displays error message when any API call fails', async () => {
-    mockFetch.mockImplementationOnce(() =>
-      Promise.resolve({
-        ok: false,
-        status: 500,
-        json: () => Promise.resolve({ detail: 'Server error' }),
-      })
-    );
-
+    mockFetch.mockImplementationOnce(() => Promise.resolve({ ok: false }));
     renderWithRouter(<DashboardPage />);
-
     await waitFor(() => {
       expect(screen.getByText('Failed to fetch some dashboard data')).toBeInTheDocument();
     });
@@ -210,38 +184,15 @@ describe('DashboardPage', () => {
   it('handles network errors', async () => {
     mockFetch.mockImplementationOnce(() => Promise.reject(new Error('Network error')));
     renderWithRouter(<DashboardPage />);
-
     await waitFor(() => {
       expect(screen.getByText('Network error')).toBeInTheDocument();
     });
   });
 
   it('displays correct counts when endpoints return empty arrays', async () => {
-    mockFetch
-      .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([]),
-        })
-      )
-      .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([]),
-        })
-      )
-      .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([]),
-        })
-      )
-      .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([]),
-        })
-      );
+    mockFetch.mockImplementation(() =>
+      Promise.resolve({ ok: true, json: () => Promise.resolve([]) })
+    );
 
     renderWithRouter(<DashboardPage />);
 
@@ -257,31 +208,9 @@ describe('DashboardPage', () => {
   });
 
   it('handles empty top complaints gracefully', async () => {
-    mockFetch
-      .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([]),
-        })
-      )
-      .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([]),
-        })
-      )
-      .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([]),
-        })
-      )
-      .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([]),
-        })
-      );
+    mockFetch.mockImplementation(() =>
+      Promise.resolve({ ok: true, json: () => Promise.resolve([]) })
+    );
 
     renderWithRouter(<DashboardPage />);
 
@@ -312,29 +241,13 @@ describe('DashboardPage', () => {
 
     mockFetch
       .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(edgeCaseComplaints),
-        })
+        Promise.resolve({ ok: true, json: () => Promise.resolve(edgeCaseComplaints) })
       )
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
       .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([]),
-        })
+        Promise.resolve({ ok: true, json: () => Promise.resolve([edgeCaseComplaints[1]]) })
       )
-      .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([edgeCaseComplaints[1]]),
-        })
-      )
-      .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([]),
-        })
-      );
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }));
 
     renderWithRouter(<DashboardPage />);
 
@@ -346,6 +259,139 @@ describe('DashboardPage', () => {
       expect(totalComplaints).toHaveTextContent('2');
       expect(openCases).toHaveTextContent('0');
       expect(closedCases).toHaveTextContent('1');
+    });
+  });
+});
+
+describe('Constituent View Tests', () => {
+  let history;
+
+  beforeEach(() => {
+    history = createMemoryHistory();
+    mockFetch.mockClear();
+    mockSessionStorage.getItem.mockImplementation(() => 'fake-token');
+  });
+
+  const renderWithRouter = component => {
+    return render(<Router history={history}>{component}</Router>);
+  };
+
+  it('toggles between district and constituent views', async () => {
+    mockFetch.mockImplementation(() =>
+      Promise.resolve({ ok: true, json: () => Promise.resolve([]) })
+    );
+
+    renderWithRouter(<DashboardPage />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Loading dashboard data...')).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByText('All District Complaints')).toBeInTheDocument();
+    const toggleButton = screen.getByText("Show My Constituents' Complaints");
+    expect(toggleButton).toBeInTheDocument();
+
+    toggleButton.click();
+
+    await waitFor(() => {
+      expect(screen.getByText('Complaints by My Constituents')).toBeInTheDocument();
+      expect(screen.getByText('Show All District Complaints')).toBeInTheDocument();
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8000/api/complaints/allComplaints/?constituent=true',
+      expect.any(Object)
+    );
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8000/api/complaints/openCases/?constituent=true',
+      expect.any(Object)
+    );
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8000/api/complaints/closedCases/?constituent=true',
+      expect.any(Object)
+    );
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8000/api/complaints/topComplaints/?constituent=true',
+      expect.any(Object)
+    );
+  });
+
+  it('displays constituent data correctly', async () => {
+    const constituentComplaints = [
+      {
+        unique_key: 'constituent1',
+        complaint_type: 'Housing',
+        descriptor: 'Maintenance',
+        borough: 'Manhattan',
+        council_dist: 'NYCC01',
+        opendate: '2024-01-01',
+        closedate: null,
+      },
+    ];
+
+    const constituentTopComplaints = [
+      { complaint_type: 'Housing', count: 3 },
+      { complaint_type: 'Noise', count: 2 },
+      { complaint_type: 'Traffic', count: 1 },
+    ];
+
+    mockFetch
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
+      .mockImplementationOnce(() =>
+        Promise.resolve({ ok: true, json: () => Promise.resolve(constituentComplaints) })
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({ ok: true, json: () => Promise.resolve([constituentComplaints[0]]) })
+      )
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
+      .mockImplementationOnce(() =>
+        Promise.resolve({ ok: true, json: () => Promise.resolve(constituentTopComplaints) })
+      );
+
+    renderWithRouter(<DashboardPage />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Loading dashboard data...')).not.toBeInTheDocument();
+    });
+
+    screen.getByText("Show My Constituents' Complaints").click();
+
+    await waitFor(() => {
+      const totalComplaints = screen.getByText('Total Complaints').nextSibling;
+      const openCases = screen.getByText('Open Cases').nextSibling;
+      const closedCases = screen.getByText('Closed Cases').nextSibling;
+
+      expect(totalComplaints).toHaveTextContent('1');
+      expect(openCases).toHaveTextContent('1');
+      expect(closedCases).toHaveTextContent('0');
+
+      const topComplaintsSection = screen.getByText('Top Complaint Types').closest('.stat-card');
+      expect(within(topComplaintsSection).getByText('Housing')).toBeInTheDocument();
+      expect(within(topComplaintsSection).getByText('(3)')).toBeInTheDocument();
+    });
+  });
+
+  it('handles errors in constituent view', async () => {
+    mockFetch
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
+      .mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }))
+      .mockImplementationOnce(() => Promise.resolve({ ok: false }));
+
+    renderWithRouter(<DashboardPage />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Loading dashboard data...')).not.toBeInTheDocument();
+    });
+
+    screen.getByText("Show My Constituents' Complaints").click();
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to fetch some dashboard data')).toBeInTheDocument();
     });
   });
 });
