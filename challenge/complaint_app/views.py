@@ -14,11 +14,14 @@ class ComplaintViewSet(viewsets.ModelViewSet):
     # Get all complaints from the user's district
     try:
         user_profile = UserProfile.objects.get(user=request.user)
-
         district_number = user_profile.district
         padded_district = f"NYCC{int(district_number):02d}"
 
-        complaints = Complaint.objects.filter(account=padded_district)
+        # Check if we want constituent data
+        is_constituent = request.query_params.get('constituent', '').lower() == 'true'
+        filter_field = 'council_dist' if is_constituent else 'account'
+
+        complaints = Complaint.objects.filter(**{filter_field: padded_district})
 
         serializer = self.serializer_class(complaints, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -42,15 +45,18 @@ class OpenCasesViewSet(viewsets.ModelViewSet):
     # Get only the open complaints from the user's district
     try:
       user_profile = UserProfile.objects.get(user=request.user)
-
       district_number = user_profile.district
       padded_district = f"NYCC{int(district_number):02d}"
 
-      openComplaintCases = Complaint.objects.filter(
-        account=padded_district,
-        opendate__isnull=False,
-        closedate__isnull=True
-      )
+      # Check if we want constituent data
+      is_constituent = request.query_params.get('constituent', '').lower() == 'true'
+      filter_field = 'council_dist' if is_constituent else 'account'
+
+      openComplaintCases = Complaint.objects.filter(**{
+        filter_field: padded_district,
+        'opendate__isnull': False,
+        'closedate__isnull': True
+      })
 
       serializer = self.serializer_class(openComplaintCases, many=True)
       return Response(serializer.data, status=status.HTTP_200_OK)
@@ -67,8 +73,6 @@ class OpenCasesViewSet(viewsets.ModelViewSet):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
-
-
 class ClosedCasesViewSet(viewsets.ModelViewSet):
   http_method_names = ['get']
   serializer_class = ComplaintSerializer
@@ -76,14 +80,17 @@ class ClosedCasesViewSet(viewsets.ModelViewSet):
     # Get only complaints that are closed from the user's district
     try:
       user_profile = UserProfile.objects.get(user=request.user)
-
       district_number = user_profile.district
       padded_district = f"NYCC{int(district_number):02d}"
 
-      closedComplaintCases = Complaint.objects.filter(
-        account=padded_district,
-        closedate__isnull=False
-      )
+      # Check if we want constituent data
+      is_constituent = request.query_params.get('constituent', '').lower() == 'true'
+      filter_field = 'council_dist' if is_constituent else 'account'
+
+      closedComplaintCases = Complaint.objects.filter(**{
+        filter_field: padded_district,
+        'closedate__isnull': False
+      })
 
       serializer = self.serializer_class(closedComplaintCases, many=True)
       return Response(serializer.data, status=status.HTTP_200_OK)
@@ -106,13 +113,16 @@ class TopComplaintTypeViewSet(viewsets.ModelViewSet):
     # Get the top 3 complaint types from the user's district
     try:
       user_profile = UserProfile.objects.get(user=request.user)
-
       district_number = user_profile.district
       padded_district = f"NYCC{int(district_number):02d}"
 
+      # Check if we want constituent data
+      is_constituent = request.query_params.get('constituent', '').lower() == 'true'
+      filter_field = 'council_dist' if is_constituent else 'account'
+
       # Top 3 complaint case types
       topComplaintCaseTypes = (Complaint.objects
-        .filter(account=padded_district)
+        .filter(**{filter_field: padded_district})
         .values('complaint_type')
         .annotate(count=Count('complaint_type'))
         .order_by('-count')

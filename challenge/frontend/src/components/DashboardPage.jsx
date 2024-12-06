@@ -22,6 +22,7 @@ const DashboardPage = () => {
   const [topThreeTypes, setTopThreeTypes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showConstituents, setShowConstituents] = useState(false);
   const history = useHistory();
 
   useEffect(() => {
@@ -46,12 +47,23 @@ const DashboardPage = () => {
       };
 
       try {
+        setIsLoading(true);
+
+        // Add constituent parameter to endpoints when in constituent view
+        const constituentParam = showConstituents ? '?constituent=true' : '';
+
         // Fetch all data in parallel
         const [complaintsResponse, openResponse, closedResponse, topResponse] = await Promise.all([
-          fetch('http://localhost:8000/api/complaints/allComplaints/', { headers }),
-          fetch('http://localhost:8000/api/complaints/openCases/', { headers }),
-          fetch('http://localhost:8000/api/complaints/closedCases/', { headers }),
-          fetch('http://localhost:8000/api/complaints/topComplaints/', { headers }),
+          fetch(`http://localhost:8000/api/complaints/allComplaints/${constituentParam}`, {
+            headers,
+          }),
+          fetch(`http://localhost:8000/api/complaints/openCases/${constituentParam}`, { headers }),
+          fetch(`http://localhost:8000/api/complaints/closedCases/${constituentParam}`, {
+            headers,
+          }),
+          fetch(`http://localhost:8000/api/complaints/topComplaints/${constituentParam}`, {
+            headers,
+          }),
         ]);
 
         // Check if any request failed
@@ -79,7 +91,7 @@ const DashboardPage = () => {
     };
 
     fetchDashboardData();
-  }, [history]);
+  }, [history, showConstituents]);
 
   if (isLoading) {
     return (
@@ -133,7 +145,19 @@ const DashboardPage = () => {
 
         <section className="dashboard-section">
           <div className="section-header">
-            <h3 className="section-title">All District Complaints</h3>
+            <div className="section-title-row">
+              <h3 className="section-title">
+                {showConstituents ? 'Complaints by My Constituents' : 'All District Complaints'}
+              </h3>
+              <button
+                className="view-toggle-button"
+                onClick={() => setShowConstituents(!showConstituents)}
+              >
+                {showConstituents
+                  ? 'Show All District Complaints'
+                  : "Show My Constituents' Complaints"}
+              </button>
+            </div>
           </div>
 
           <div className="complaint-table-wrapper">
