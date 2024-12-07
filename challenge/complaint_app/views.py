@@ -52,6 +52,7 @@ class OpenCasesViewSet(viewsets.ModelViewSet):
       is_constituent = request.query_params.get('constituent', '').lower() == 'true'
       filter_field = 'council_dist' if is_constituent else 'account'
 
+      # Open: has open date and no close data
       openComplaintCases = Complaint.objects.filter(**{
         filter_field: padded_district,
         'opendate__isnull': False,
@@ -87,6 +88,7 @@ class ClosedCasesViewSet(viewsets.ModelViewSet):
       is_constituent = request.query_params.get('constituent', '').lower() == 'true'
       filter_field = 'council_dist' if is_constituent else 'account'
 
+      # Closed: Has no close date
       closedComplaintCases = Complaint.objects.filter(**{
         filter_field: padded_district,
         'closedate__isnull': False
@@ -151,7 +153,7 @@ class ConstituentComplaintsViewSet(viewsets.ModelViewSet):
       try:
         user_district = self.request.user.userprofile.district
 
-        # Add leading zero if needed)
+        # Add leading zero if needed
         district_num = user_district if len(user_district) > 1 else f"0{user_district}"
         formatted_district = f"NYCC{district_num}"
 
