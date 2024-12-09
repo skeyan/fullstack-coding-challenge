@@ -4,6 +4,7 @@ from .serializers import UserSerializer, UserProfileSerializer, ComplaintSeriali
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Count
+from .utils.string_utils import format_district_number
 
 # Create your views here.
 
@@ -15,7 +16,7 @@ class ComplaintViewSet(viewsets.ModelViewSet):
     try:
         user_profile = UserProfile.objects.get(user=request.user)
         district_number = user_profile.district
-        padded_district = f"NYCC{int(district_number):02d}"
+        padded_district = format_district_number(district_number)
 
         # BONUS CHALLENGE EXTRA: Check if we want constituent data
         is_constituent = request.query_params.get('constituent', '').lower() == 'true'
@@ -48,7 +49,7 @@ class OpenCasesViewSet(viewsets.ModelViewSet):
     try:
       user_profile = UserProfile.objects.get(user=request.user)
       district_number = user_profile.district
-      padded_district = f"NYCC{int(district_number):02d}"
+      padded_district = format_district_number(district_number)
 
       # BONUS CHALLENGE EXTRA: Check if we want constituent data
       is_constituent = request.query_params.get('constituent', '').lower() == 'true'
@@ -85,7 +86,7 @@ class ClosedCasesViewSet(viewsets.ModelViewSet):
     try:
       user_profile = UserProfile.objects.get(user=request.user)
       district_number = user_profile.district
-      padded_district = f"NYCC{int(district_number):02d}"
+      padded_district = format_district_number(district_number)
 
       # BONUS CHALLENGE EXTRA: Check if we want constituent data
       is_constituent = request.query_params.get('constituent', '').lower() == 'true'
@@ -120,7 +121,7 @@ class TopComplaintTypeViewSet(viewsets.ModelViewSet):
     try:
       user_profile = UserProfile.objects.get(user=request.user)
       district_number = user_profile.district
-      padded_district = f"NYCC{int(district_number):02d}"
+      padded_district = format_district_number(district_number)
 
       # BONUS CHALLENGE EXTRA: Check if we want constituent data
       is_constituent = request.query_params.get('constituent', '').lower() == 'true'
