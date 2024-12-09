@@ -44,6 +44,7 @@ class OpenCasesViewSet(viewsets.ModelViewSet):
   serializer_class = ComplaintSerializer
   def list(self, request):
     # Get only the open complaints from the user's district
+    # Open: has an open date, but no closing date
     try:
       user_profile = UserProfile.objects.get(user=request.user)
       district_number = user_profile.district
@@ -54,7 +55,6 @@ class OpenCasesViewSet(viewsets.ModelViewSet):
       filter_field = 'council_dist' if is_constituent else 'account'
       # END BONUS CHALLENGE
 
-      # Open: has open date and no close data
       openComplaintCases = Complaint.objects.filter(**{
         filter_field: padded_district,
         'opendate__isnull': False,
@@ -81,6 +81,7 @@ class ClosedCasesViewSet(viewsets.ModelViewSet):
   serializer_class = ComplaintSerializer
   def list(self, request):
     # Get only complaints that are closed from the user's district
+    # Closed: has a closing date
     try:
       user_profile = UserProfile.objects.get(user=request.user)
       district_number = user_profile.district
@@ -165,7 +166,7 @@ class ConstituentComplaintsViewSet(viewsets.ModelViewSet):
         # Filter complaints by constituent's district (council_dist)
         complaintsByConstituents = Complaint.objects.filter(
             council_dist=formatted_district
-        ).order_by('-opendate')
+        )
 
         serializer = self.serializer_class(complaintsByConstituents, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
