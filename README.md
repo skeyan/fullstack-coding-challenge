@@ -50,6 +50,7 @@ Mobile example:
   - Frontend tests: In the /frontend folder, run `npm run test`
   - Django tests: In the /challenge folder, run `./test.bat`
 - For the Bonus task - Complaints by consituents, I ended up modifying some of the existing ViewSets to accept an additional `constituents` parameter. I was conflicted over whether to update the statistics (e.g., num open and closed cases) when the button was toggled. I ended up going with the update and the extra param, so that the council member could hypothetically view these statistics that might be additionally interesting to them. If I were working in a team, I would confirm the desired product behavior first.
+- Given a more extended project/timeline, one of the things I would aim to improve is the authentication, perhaps by creating an auth service and reading more into React and Django's common larger scale handling of authentication and tokens.
 
 ### References Used
 
@@ -64,7 +65,7 @@ Mobile example:
 
 ### Reflections
 
-It was a new but fun experience learning Django and DRF after working a lot with Ember at my current job. There is a lot about DRF/Django that is new to me and I also reviewed React docs as well, so it was a definite learning experience. Overall, I enjoyed the challenge.
+It was a new but fun experience learning Django and DRF after working a lot with Ember at my current job. There is a lot about DRF/Django that is new to me and I also reviewed React docs as well, so it was a definite learning experience. Overall, I enjoyed the challenge. 
 
 ---
 
