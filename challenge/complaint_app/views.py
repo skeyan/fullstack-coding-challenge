@@ -149,6 +149,7 @@ class TopComplaintTypeViewSet(viewsets.ModelViewSet):
             {"error": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+# BONUS CHALLENGE EXTRA
 class ConstituentComplaintsViewSet(viewsets.ModelViewSet):
   http_method_names = ['get']
   serializer_class = ComplaintSerializer
@@ -180,3 +181,4 @@ class ConstituentComplaintsViewSet(viewsets.ModelViewSet):
               {"error": str(e)},
               status=status.HTTP_500_INTERNAL_SERVER_ERROR
           )
+# END BONUS CHALLENGE
