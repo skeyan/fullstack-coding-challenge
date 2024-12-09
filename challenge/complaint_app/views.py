@@ -17,9 +17,10 @@ class ComplaintViewSet(viewsets.ModelViewSet):
         district_number = user_profile.district
         padded_district = f"NYCC{int(district_number):02d}"
 
-        # Check if we want constituent data
+        # BONUS CHALLENGE EXTRA: Check if we want constituent data
         is_constituent = request.query_params.get('constituent', '').lower() == 'true'
         filter_field = 'council_dist' if is_constituent else 'account'
+        # END BONUS CHALLENGE
 
         complaints = Complaint.objects.filter(**{filter_field: padded_district})
 
@@ -48,9 +49,10 @@ class OpenCasesViewSet(viewsets.ModelViewSet):
       district_number = user_profile.district
       padded_district = f"NYCC{int(district_number):02d}"
 
-      # Check if we want constituent data
+      # BONUS CHALLENGE EXTRA: Check if we want constituent data
       is_constituent = request.query_params.get('constituent', '').lower() == 'true'
       filter_field = 'council_dist' if is_constituent else 'account'
+      # END BONUS CHALLENGE
 
       # Open: has open date and no close data
       openComplaintCases = Complaint.objects.filter(**{
@@ -84,9 +86,10 @@ class ClosedCasesViewSet(viewsets.ModelViewSet):
       district_number = user_profile.district
       padded_district = f"NYCC{int(district_number):02d}"
 
-      # Check if we want constituent data
+      # BONUS CHALLENGE EXTRA: Check if we want constituent data
       is_constituent = request.query_params.get('constituent', '').lower() == 'true'
       filter_field = 'council_dist' if is_constituent else 'account'
+      # END BONUS CHALLENGE
 
       # Closed: Has no close date
       closedComplaintCases = Complaint.objects.filter(**{
@@ -118,9 +121,10 @@ class TopComplaintTypeViewSet(viewsets.ModelViewSet):
       district_number = user_profile.district
       padded_district = f"NYCC{int(district_number):02d}"
 
-      # Check if we want constituent data
+      # BONUS CHALLENGE EXTRA: Check if we want constituent data
       is_constituent = request.query_params.get('constituent', '').lower() == 'true'
       filter_field = 'council_dist' if is_constituent else 'account'
+      # END BONUS CHALLENGE
 
       # Top 3 complaint case types
       topComplaintCaseTypes = (Complaint.objects
