@@ -32,7 +32,6 @@ export const COMPLAINT_TABLE_COLUMNS = [
  * @component
  * @param {Object} props - Component props
  * @param {Array} props.complaints - Array of complaint objects to display
- * @returns {JSX.Element} Table containing complaint data
  *
  * @example
  * <ComplaintTable complaints={complaintData} />
